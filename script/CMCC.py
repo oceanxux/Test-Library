@@ -1,44 +1,27 @@
-"""
-cron: 0 0/30 * * * ?
-new Env(' CMCC监控');
-"""
 import time
 import os
 import json
 import notify
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
-<<<<<<< HEAD
-# ==================== 监控列表 ====================
-# 商品详情页的URL模板
-DETAIL_PAGE_URL_TEMPLATE = ""
-=======
 # 需要获取aid=xxxx&memberId=xxxx&ruleCode=xxxxx&channelCode=xxxx&paytype=x&pageRecorded=true&mid={mid}&tc={tc}&onetc={onetc}"
->>>>>>> 4b7b8e8 (修改hdhive)
-
-# 要监控后端API的URL
-API_URL_TO_INTERCEPT = "https://dev.coc.10086.cn/coc3/coc3-market-activity/arrange/getProductByActivityId"
 # ==================== 监控列表 ====================
-# 商品详情页的URL
-DETAIL_PAGE_URL_TEMPLATE = "https://dev.coc.10086.cn/coc3/canvas/rightsmarket-h5-canvas/online/detail?aid=xxxx&memberId=xxxx&ruleCode=xxxxx&channelCode=xxxx&paytype=x&pageRecorded=true&mid={mid}&tc={tc}&onetc={onetc}"
+# 这是商品详情页的URL模板
+DETAIL_PAGE_URL_TEMPLATE = "https://dev.coc.10086.cn/coc3/canvas/rightsmarket-h5-canvas/online/detail?aid=xxx&memberId=1387&ruleCode=xxxx&channelCode=xxx&paytype=x&pageRecorded=true&mid={mid}&tc={tc}&onetc={onetc}"
 
-# 要监控后端API的URL
+# 这是我们要监控的后端API的URL
 API_URL_TO_INTERCEPT = "https://dev.coc.10086.cn/coc3/coc3-market-activity/arrange/getProductByActivityId"
 
-# 商品列表
+# 监控的商品列表
 MONITOR_LIST = [
     {
-<<<<<<< HEAD
-        "name": "alipay15元⚡️费",
-=======
-        "name": "ali 15元⚡️费",
->>>>>>> 4b7b8e8 (修改hdhive)
+        "name": "支付宝15元电费",
         "mid": "22373",
         "tc": "9732",
         "onetc": "2980"
     },
     {
-        "name": "WeChat 20元⚡️费",
+        "name": "微信20元电费",
         "mid": "22559",
         "tc": "2990",
         "onetc": "9735"
@@ -98,11 +81,7 @@ def check_stock(page, current_item):
 
 # ==================== 主程序 ====================
 def main():
-<<<<<<< HEAD
-    # 使用脚本中定义的监控列表
-=======
     # 直接使用脚本中定义的监控列表
->>>>>>> 4b7b8e8 (修改hdhive)
     monitor_list = MONITOR_LIST
 
     is_ql_env = 'QL_DIR' in os.environ or 'DEBIAN_FRONTEND' in os.environ
