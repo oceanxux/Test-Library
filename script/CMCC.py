@@ -1,3 +1,8 @@
+"""
+cron: 0 */5 * * * ?
+new Env('fuxiaoquan jiankong');
+"""
+
 import time
 import os
 import json
@@ -15,13 +20,13 @@ API_URL_TO_INTERCEPT = "https://dev.coc.10086.cn/coc3/coc3-market-activity/arran
 # 监控的商品列表
 MONITOR_LIST = [
     {
-        "name": "支付宝15元电费",
+        "name": "Alipay 15元⚡️费",
         "mid": "22373",
         "tc": "9732",
         "onetc": "2980"
     },
     {
-        "name": "微信20元电费",
+        "name": "Wechat 20元⚡️费",
         "mid": "22559",
         "tc": "2990",
         "onetc": "9735"
