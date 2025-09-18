@@ -12,7 +12,7 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 # 需要获取aid=xxxx&memberId=xxxx&ruleCode=xxxxx&channelCode=xxxx&paytype=x&pageRecorded=true&mid={mid}&tc={tc}&onetc={onetc}"
 # ==================== 监控列表 ====================
 # 这是商品详情页的URL模板
-DETAIL_PAGE_URL_TEMPLATE = "https://dev.coc.10086.cn/coc3/canvas/rightsmarket-h5-canvas/online/detail?aid=xxx&memberId=1387&ruleCode=xxxx&channelCode=xxx&paytype=x&pageRecorded=true&mid={mid}&tc={tc}&onetc={onetc}"
+DETAIL_PAGE_URL_TEMPLATE = "https://dev.coc.10086.cn/coc3/canvas/rightsmarket-h5-canvas/online/detail?aid=xxx&memberId=xxx&ruleCode=xxxx&channelCode=xxx&paytype=x&pageRecorded=true&mid={mid}&tc={tc}&onetc={onetc}"
 
 # 这是我们要监控的后端API的URL
 API_URL_TO_INTERCEPT = "https://dev.coc.10086.cn/coc3/coc3-market-activity/arrange/getProductByActivityId"
