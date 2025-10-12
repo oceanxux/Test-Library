@@ -8,7 +8,33 @@ import os
 import json
 import notify
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+# ==================== PushPlus 推送配置 ====================
+PUSHPLUS_TOKEN = "你的PushPlusToken"  # ← 在这里替换成你的 token
 
+# ==================== PushPlus 推送函数 ====================
+def pushplus_notify(title, content):
+    """使用 PushPlus 发送通知"""
+    if not PUSHPLUS_TOKEN:
+        print("⚠️ 未设置 PushPlus TOKEN，跳过推送。")
+        return
+
+    url = "http://www.pushplus.plus/send"
+    data = {
+        "token": PUSHPLUS_TOKEN,
+        "title": title,
+        "content": content,
+        "template": "html"  # plain / html / markdown 都可以
+    }
+
+    try:
+        resp = requests.post(url, json=data, timeout=10)
+        res = resp.json()
+        if res.get("code") == 200:
+            print("✅ PushPlus 推送成功")
+        else:
+            print("⚠️ PushPlus 推送失败:", res)
+    except Exception as e:
+        print("❌ PushPlus 推送异常:", e)
 # 需要获取aid=xxxx&memberId=xxxx&ruleCode=xxxxx&channelCode=xxxx&paytype=x&pageRecorded=true&mid={mid}&tc={tc}&onetc={onetc}"
 # ==================== 监控列表 ====================
 # 这是商品详情页的URL模板
@@ -74,6 +100,7 @@ def check_stock(page, current_item):
 请尽快前往兑换！"""
                 print("发现库存 > 0，准备发送通知...")
                 notify.send(title, content)
+                pushplus_notify(title, content)
         elif stock == -1:
             print("❌ 未能截获到或在返回数据中找到有效的库存信息。")
         elif stock == -2:
