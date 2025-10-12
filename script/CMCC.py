@@ -22,7 +22,7 @@ def pushplus_notify(title, content):
         "token": PUSHPLUS_TOKEN,
         "title": title,
         "content": content,
-        "template": "txt"  # 纯文本模板
+        "template": "txt"  
     }
 
     try:
@@ -45,7 +45,6 @@ MONITOR_LIST = [
     {"name": "Wechat 20元⚡️费", "mid": "22559", "tc": "2990", "onetc": "9735"}
 ]
 
-# ==================== 全局推送列表 ====================
 push_messages = []
 
 # ==================== 核心功能 ====================
@@ -81,8 +80,9 @@ def check_stock(page, current_item):
         page.goto(url, wait_until='networkidle', timeout=30000)
         page.remove_listener("response", handle_response)
 
-        if stock >= 0:
-            print(f"✅ 成功获取库存: {stock}")
+        # 只有库存大于0才推送
+        if stock > 0:
+            print(f"✅ 成功获取库存: {stock}，商品有货！")
             message = (
                 f"🎉 {current_item['name']} 有货啦！\n\n"
                 f"商品名称: {current_item['name']}\n"
@@ -90,6 +90,8 @@ def check_stock(page, current_item):
                 f"请尽快前往兑换！"
             )
             push_messages.append(message)
+        elif stock == 0:
+            print(f"库存为 0，不推送。")
         elif stock == -1:
             print("❌ 未能截获到或在返回数据中找到有效的库存信息。")
         elif stock == -2:
@@ -99,7 +101,6 @@ def check_stock(page, current_item):
         print("❌ 页面加载超时，请检查网络或目标网站是否可用。")
     except Exception as e:
         print(f"❌ 发生未知错误: {e}")
-
 # ==================== 主程序 ====================
 def main():
     is_ql_env = 'QL_DIR' in os.environ or 'DEBIAN_FRONTEND' in os.environ
