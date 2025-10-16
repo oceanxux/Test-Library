@@ -1,8 +1,7 @@
 # -- coding: utf-8 --
 """
-fork https://github.com/yowiv/NodeSeek-Signin
-cron: 21 25 11 ? * *
 new Env('ns论坛签到');
+cron: 21 25 11 * * *
 """
 
 import os
