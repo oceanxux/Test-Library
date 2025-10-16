@@ -1,5 +1,5 @@
 """
-cron: 0 */5 * * * ?
+cron: 0 */5 * * * *
 new Env('fuxiaoquan jiankong');
 """
 import time
