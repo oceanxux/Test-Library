@@ -1,10 +1,5 @@
 """
-cron: 5 22 10 ? * *
-new Env('远景论坛签到');
-fok for https://github.com/iXinjie/qlScripts
-"""
-"""
-cron: 0 0 8 ? * *
+cron: 0 0 8 * * *
 new Env('远景论坛签到');
 """
 import requests
