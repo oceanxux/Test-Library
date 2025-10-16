@@ -1,5 +1,5 @@
 """
-cron: 2 50 9 ? * *
+cron: 2 50 9 * * *
 new Env('恩山论坛签到');
 """
 import json
@@ -19,35 +19,74 @@ except ImportError:
 
 def sign(cookie):
     msg = []
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.125 Safari/537.36",
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
         "Cookie": cookie,
-    }
-    response = requests.get(
-        url="https://www.right.com.cn/FORUM/home.php?mod=spacecp&ac=credit&showcredit=1",
-        headers=headers,
-        verify=False,
-    )
+    })
+
     try:
-        coin = re.findall("恩山币: </em>(.*?)&nbsp;", response.text)[0]
-        point = re.findall("<em>积分: </em>(.*?)<span", response.text)[0]
-        msg = [
-            {
-                "name": "恩山币",
-                "value": coin,
-            },
-            {
-                "name": "积分",
-                "value": point,
-            },
-        ]
+        page_url = "https://www.right.com.cn/forum/erling_qd-sign_in.html"
+        page_res = session.get(page_url, verify=False)
+        page_res.raise_for_status()
+
+        # Helper function to parse details from HTML
+        def get_details(html_text):
+            user_match = re.search(r'<span class="erqd-nickname">(.+?)</span>', html_text)
+            points_match = re.search(r'今日积分：<span class="erqd-current-point">(\d+)</span>', html_text)
+            days_match = re.search(r'连续签到：<span class="erqd-continuous-days">(\d+)</span> 天', html_text)
+            user = user_match.group(1) if user_match else "未知"
+            points = points_match.group(1) if points_match else "未知"
+            days = days_match.group(1) if days_match else "未知"
+            return user, points, days
+
+        if 'id="signin-btn" class="erqd-checkin-btn erqd-checkin-btn2" disabled>已签到</button>' in page_res.text:
+            username, points_today, continuous_days = get_details(page_res.text)
+            msg = [
+                {"name": "账户名称", "value": username},
+                {"name": "签到结果", "value": "今天已经签到过了"},
+                {"name": "今日积分", "value": points_today},
+                {"name": "连续签到", "value": f"{continuous_days} 天"}
+            ]
+            return msg
+
+        formhash_match = re.search(r"var FORMHASH = '(\w+)'", page_res.text)
+        if not formhash_match:
+            return [{"name": "签到失败", "value": "无法获取formhash，页面结构可能已更新"}]
+        
+        formhash = formhash_match.group(1)
+        
+        sign_url = "https://www.right.com.cn/forum/plugin.php?id=erling_qd:action&action=sign"
+        post_data = {'formhash': formhash}
+        session.headers.update({
+            "Referer": page_url,
+            "X-Requested-With": "XMLHttpRequest",
+        })
+        
+        sign_res = session.post(sign_url, data=post_data, verify=False)
+        sign_res.raise_for_status()
+        
+        print("签到接口返回内容:", sign_res.text)
+        data = sign_res.json()
+
+        if data.get("success"):
+            # Reload the page to get updated info after signing in
+            page_res_after_signin = session.get(page_url, verify=False)
+            username, points_today, continuous_days = get_details(page_res_after_signin.text)
+            msg = [
+                {"name": "账户名称", "value": username},
+                {"name": "签到结果", "value": data.get("message", "成功")},
+                {"name": "今日积分", "value": points_today},
+                {"name": "连续签到", "value": f"{continuous_days} 天"}
+            ]
+        else:
+             msg = [{"name": "签到失败", "value": data.get("message", "未知错误")}]
+
+    except requests.exceptions.RequestException as e:
+        msg = [{"name": "网络请求异常", "value": str(e)}]
     except Exception as e:
-        msg = [
-            {
-                "name": "签到失败",
-                "value": str(e),
-            }
-        ]
+        msg = [{"name": "签到处理异常", "value": str(e)}]
+        
     return msg
 
 
