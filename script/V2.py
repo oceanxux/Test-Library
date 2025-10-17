@@ -1,6 +1,6 @@
 """
 new Env('V2EX 论坛签到');
-cron: 2 50 9 * * *
+cron: 2 50 14 * * *
 """
 
 import requests
