@@ -1,11 +1,14 @@
 """
 cron: 2 50 9 * * *
-new Env('恩山论坛签到');
+new Env('ENSHAN签到');
 """
 import json
 import os
 import re
 import requests
+import time
+import tempfile
+from pathlib import Path
 import urllib3
 
 urllib3.disable_warnings()
@@ -24,6 +27,19 @@ def sign(cookie):
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
         "Cookie": cookie,
     })
+
+    total_credit = "未知"
+    try:
+        # Get total credits from the main page
+        home_url = "https://www.right.com.cn/forum/"
+        home_res = session.get(home_url, verify=False)
+        home_res.raise_for_status()
+        credit_match = re.search(r'id="extcreditmenu".*?>积分: (\d+)<', home_res.text)
+        if credit_match:
+            total_credit = credit_match.group(1)
+    except Exception as e:
+        print(f"获取总积分失败: {e}")
+        total_credit = "获取失败"
 
     try:
         page_url = "https://www.right.com.cn/forum/erling_qd-sign_in.html"
@@ -46,7 +62,8 @@ def sign(cookie):
                 {"name": "账户名称", "value": username},
                 {"name": "签到结果", "value": "今天已经签到过了"},
                 {"name": "今日积分", "value": points_today},
-                {"name": "连续签到", "value": f"{continuous_days} 天"}
+                {"name": "连续签到", "value": f"{continuous_days} 天"},
+                {"name": "总积分", "value": total_credit}
             ]
             return msg
 
@@ -77,7 +94,8 @@ def sign(cookie):
                 {"name": "账户名称", "value": username},
                 {"name": "签到结果", "value": data.get("message", "成功")},
                 {"name": "今日积分", "value": points_today},
-                {"name": "连续签到", "value": f"{continuous_days} 天"}
+                {"name": "连续签到", "value": f"{continuous_days} 天"},
+                {"name": "总积分", "value": total_credit}
             ]
         else:
              msg = [{"name": "签到失败", "value": data.get("message", "未知错误")}]
@@ -91,6 +109,24 @@ def sign(cookie):
 
 
 def main():
+    lock_file = Path(tempfile.gettempdir()) / "enshan_signin.lock"
+    lock_timeout = 60  # seconds
+
+    if lock_file.exists():
+        try:
+            last_run_time = float(lock_file.read_text())
+            if time.time() - last_run_time < lock_timeout:
+                print("脚本在短时间内被重复执行，已跳过本次运行。")
+                return
+        except (ValueError, IOError):
+            pass
+
+    try:
+        lock_file.write_text(str(time.time()))
+    except IOError:
+        print("警告：无法写入锁定文件。")
+        pass
+        
     cookie = os.environ.get("ENSHAN_COOKIE")
     if not cookie:
         print("请设置环境变量 ENSHAN_COOKIE")
