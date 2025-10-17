@@ -1,6 +1,6 @@
 """
-cron: 0 */5 * * * *
-new Env('fuxiaoquan jiankong');
+cron: 5 */10 * * * *
+new Env(' 5折购电费监控');
 """
 import time
 import os
