@@ -1,6 +1,6 @@
 """
 cron: 5 */10 * * * *
-new Env(' 5折购电费监控');
+new Env(' 5折购⚡️监控');
 """
 import time
 import os
