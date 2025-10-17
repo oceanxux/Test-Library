@@ -1,5 +1,5 @@
 """
-cron: 4 21 08 * * *
+cron: 4 21 11 * * *
 new Env('贴吧签到');
 """
 import requests
