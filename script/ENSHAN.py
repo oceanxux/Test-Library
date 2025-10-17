@@ -1,5 +1,5 @@
 """
-cron: 2 50 9 * * *
+cron: 5 30 15 * * *
 new Env('ENSHAN签到');
 """
 import json
